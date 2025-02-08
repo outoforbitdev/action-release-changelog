@@ -7,7 +7,7 @@ A GitHub Action for creating a release from the most recent version in the chang
     <img alt="Test build states" src="https://github.com/outoforbitdev/action-release-changelog/workflows/Test/badge.svg">
   </a>
   <a href="https://github.com/outoforbitdev/action-release-changelog/actions?query=workflow%3ATest+branch%3Amaster">
-    <img alt="Release build states" src="https://github.com/outoforbitdev/action-release-changelog/workflows/NPM Publish/badge.svg">
+    <img alt="Release build states" src="https://github.com/outoforbitdev/action-release-changelog/workflows/Release/badge.svg">
   </a>
   <a href="https://securityscorecards.dev/viewer/?uri=github.com/outoforbitdev/action-release-changelog">
     <img alt="OpenSSF Scorecard" src="https://api.securityscorecards.dev/projects/github.com/outoforbitdev/action-release-changelog/badge">
