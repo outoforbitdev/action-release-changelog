@@ -20,7 +20,7 @@ def release_version(
         write_to_output_variable("long_version", long_version)
 
         repo = client.get_repo(repo_name)
-        last_version = repo.get_latest_release().tag_name
+        last_version = get_last_version(repo)
         write_to_output_variable("last_version", last_version)
         
         if not dry_run:
