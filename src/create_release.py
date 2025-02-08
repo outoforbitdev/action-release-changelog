@@ -16,8 +16,8 @@ def release_version(
         first_version = find_first_changelog_version(changelog_file)
         short_version = first_version
         long_version = f"v{short_version}"
-        write_to_output_variable("short_version", short_version)
-        write_to_output_variable("long_version", long_version)
+        write_to_output_variable("version_short", short_version)
+        write_to_output_variable("version_long", long_version)
 
         repo = client.get_repo(repo_name)
         last_version = get_last_version(repo)
