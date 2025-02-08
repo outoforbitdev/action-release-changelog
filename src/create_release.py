@@ -33,7 +33,7 @@ def release_version(
     client.close()
 
 def get_github_client(github_token: str):
-    auth = Auth.Token("access_token")
+    auth = Auth.Token(github_token)
     client = Github(auth=auth)
     return client
 
