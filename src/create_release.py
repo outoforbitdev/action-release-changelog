@@ -51,6 +51,12 @@ def find_first_changelog_version(changelog_path="CHANGELOG.md"):
 def error(message):
     raise Exception(message)
 
+def get_last_version(repo: Repository):
+    print(repo.get_releases())
+    if repo.get_releases().totalCount == 0:
+        return None
+    return repo.get_latest_release().tag_name
+
 def create_github_release(repo: Repository, tag_name: str, body: str=None, draft: bool=True, prerelease: bool=False,):
     if release_exists(repo, tag_name):
         error(f"Release {tag_name} already exists")
