@@ -34,10 +34,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Image
     needs: test-python-script
+    outputs:
+      last-version: ${{ steps.test-image.outputs.last-version }}
+      version-long: ${{ steps.test-image.outputs.version-long}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Test image
+        id: test-image
         run: |
           docker build -t image .
           docker run --entrypoint "sh" image /src/tests.sh
@@ -46,7 +50,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish Image
     needs: test-docker-image
-    if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
+    env:
+      NOT_CHORE: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
+      NEW_VERSION: ${{ needs.test-docker-image.outputs.last-version != needs.test-docker-image.outputs.version-long}}
+    if: ${{ github.env.NOT_CHORE && github.env.NEW_VERSION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

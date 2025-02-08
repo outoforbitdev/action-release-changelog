@@ -83,7 +83,7 @@ def write_to_summary(content):
 
 def write_to_output_variable(variable_name: str, value: str):
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-        output.write(f"{variable_name}={value}\n")
+        output.write(f"{variable_name}=\"{value}\"\n")
 
 if __name__ == "__main__":
     github_token = sys.argv[1]
