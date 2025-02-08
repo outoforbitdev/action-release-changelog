@@ -73,7 +73,8 @@ def find_first_changelog_version(changelog_path="CHANGELOG.md"):
     return None  # Return None if no version is found
 
 def write_to_output_variable(variable_name: str, value: str):
-    os.environ["GITHUB_OUTPUT"] = os.environ["GITHUB_OUTPUT"] + f"{variable_name}={value}\n"
+    with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+        output.write(f"{variable_name}={value}\n")
 
 if __name__ == "__main__":
     github_token = sys.argv[1]
