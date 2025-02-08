@@ -43,7 +43,7 @@ jobs:
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
-    needs: test-python-script
+    needs: test-docker-image
     if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
     steps:
       - name: Checkout
@@ -61,7 +61,7 @@ jobs:
   test-action:
     runs-on: ubuntu-latest
     name: Test Action
-    needs: test-python-script
+    needs: test-docker-image
     steps:
       - name: Checkout
         uses: actions/checkout@v4
