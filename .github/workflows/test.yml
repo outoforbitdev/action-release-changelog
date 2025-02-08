@@ -7,21 +7,38 @@ on:
       - reopened
       - synchronize
 jobs:
-  publish-docker-image:
+  test-python-script:
     runs-on: ubuntu-latest
-    name: Publish Image
-    if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
+    name: Test Python Script
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Publish Image
-        uses: outoforbitdev/action-docker-publish@v3.0.0
-        id: docker-publish
-        if: github.base_ref == 'staging' || github.base_ref == 'main'
         with:
-          docker-username: ${{ secrets.DOCKER_USERNAME }}
-          docker-token: ${{ secrets.DOCKER_TOKEN }}
-          image-name: ${{ vars.IMAGE_NAME }}
-          image-tag: "build"
-      - name: Output Tags
-        run: echo "Tag is ${{steps.docker-publish.output.sha-tag}}"
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5 
+        with:
+          python-version: '3.10'
+      - name: Install Python dependencies
+        run: python -m pip install requests
+      - name: Run release script
+        run: python src/create_release.py ${{secrets.GITHUB_TOKEN}} src/test/CHANGELOG.md true true true outoforbitdev/action-release-changelog
+  # publish-docker-image:
+  #   runs-on: ubuntu-latest
+  #   name: Publish Image
+  #   needs: test-python-script
+  #   if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #     - name: Publish Image
+  #       uses: outoforbitdev/action-docker-publish@v3.0.0
+  #       id: docker-publish
+  #       if: github.base_ref == 'staging' || github.base_ref == 'main'
+  #       with:
+  #         docker-username: ${{ secrets.DOCKER_USERNAME }}
+  #         docker-token: ${{ secrets.DOCKER_TOKEN }}
+  #         image-name: ${{ vars.IMAGE_NAME }}
+  #         image-tag: "build"
+  #     - name: Output Tags
+  #       run: echo "Tag is ${{steps.docker-publish.output.sha-tag}}"
