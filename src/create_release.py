@@ -86,11 +86,14 @@ def write_to_output_variable(variable_name: str, value: str):
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.write(f"{variable_name}=\"{value}\"\n")
 
+def parse_commandline_boolean(value: str):
+    return value.lower() == "true"
+
 if __name__ == "__main__":
     github_token = sys.argv[1]
     changelog_file = sys.argv[2]
-    draft = sys.argv[3]
-    should_write_to_summary = sys.argv[4]
-    dry_run = sys.argv[5]
+    draft = parse_commandline_boolean(sys.argv[3])
+    should_write_to_summary = parse_commandline_boolean(sys.argv[4])
+    dry_run = parse_commandline_boolean(sys.argv[5])
     repo_name = sys.argv[6]
     release_version(github_token, changelog_file, draft, should_write_to_summary, dry_run, repo_name)
