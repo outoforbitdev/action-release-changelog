@@ -4,6 +4,9 @@ inputs:
   github_token:
     description: "GitHub token with permissions to create a release (content: write)"
     required: true
+  repository:
+    description: "The name of the repository to create the release in (e.g. outoforbitdev/action-release-changelog)"
+    required: true
   changelog_file:
     description: "Filepath of the changelog file"
     default: "./CHANGELOG.md"
@@ -32,4 +35,4 @@ runs:
     - ${{ inputs.draft }}
     - ${{ inputs.write_to_summary }}
     - ${{ inputs.dry_run }}
-    - ${{ github.repository }}
+    - ${{ inputs.repository }}

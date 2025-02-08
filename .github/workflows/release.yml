@@ -25,3 +25,4 @@ jobs:
         id: create-release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
