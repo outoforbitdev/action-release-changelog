@@ -67,6 +67,8 @@ def create_github_release(repo: Repository, tag_name: str, body: str=None, draft
     return release
 
 def release_exists(repo, tag_name):
+    if repo.get_releases().totalCount == 0:
+        return False
     release = repo.get_release(tag_name)
     return release is not None
     
