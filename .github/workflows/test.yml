@@ -40,7 +40,7 @@ jobs:
         id: docker-test
         with:
           dockerfile-path: "./src"
-          test-command: "sh ./test.sh"
+          test-command: "sh ./tests.sh"
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
