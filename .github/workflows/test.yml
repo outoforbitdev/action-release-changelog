@@ -35,12 +35,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test Docker Image
-        uses: outoforbitdev/action-docker-test@v1.0.0-staging.1
-        id: docker-test
-        with:
-          dockerfile-path: "./src"
-          test-command: "sh ./tests.sh"
+      - name: Build image
+        run: docker build -t image .
+      - name: Test image
+        run: docker run "ls" image /src/tests.sh
+      
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
