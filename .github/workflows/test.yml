@@ -10,8 +10,6 @@ jobs:
   test-python-script:
     runs-on: ubuntu-latest
     name: Test Python Script
-    outputs:
-      version_short: ${{ steps.run-script.outputs.version_short }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,19 +24,9 @@ jobs:
       - name: Run script
         id: run-script
         run: python src/create_release.py ${{ secrets.GITHUB_TOKEN }} src/test/CHANGELOG.md true true true outoforbitdev/action-release-changelog
-      - name: Check variables
-        run: echo "${{ steps.run-script.outputs.version_short }}"
-  check-python-script-output:
-    runs-on: ubuntu-latest
-    name: Check Python Script Output
-    needs: test-python-script
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Print output
-        run: echo "${{ needs.test-python-script.outputs.version_short }}"
+      - name: Check outputs
+        run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version_short }} ${{ steps.run-script.outputs.version_long }}
+
   # publish-docker-image:
   #   runs-on: ubuntu-latest
   #   name: Publish Image
