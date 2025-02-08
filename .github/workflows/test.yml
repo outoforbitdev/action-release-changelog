@@ -29,7 +29,7 @@ jobs:
         id: run-script
         run: python src/create_release.py ${{ secrets.GITHUB_TOKEN }} src/test/CHANGELOG.md true true true outoforbitdev/action-release-changelog
       - name: Check outputs
-        run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version-short }} ${{ steps.run-script.outputs.version-long }}
+        run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version-short }} ${{ steps.run-script.outputs.version-long }} ${{ steps.run-script.outputs.dry-run }}
   test-docker-image:
     runs-on: ubuntu-latest
     name: Test Image
