@@ -1,0 +1,28 @@
+name: Release
+permissions: read-all
+on:
+  push:
+    branches:
+      - main
+      - beta
+      - dev
+      - staging
+    paths:
+      - CHANGELOG.md
+jobs:
+  release:
+    permissions: 
+      contents: write
+    runs-on: ubuntu-latest
+    name: Create Github Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Create Release
+        uses: ./
+        id: create-release
+        with:
+          github_token; ${{ secrets.GITHUB_TOKEN }}
+          
