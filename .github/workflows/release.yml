@@ -24,4 +24,4 @@ jobs:
         uses: ./
         id: create-release
         with:
-          github_token; ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
