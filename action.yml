@@ -1,0 +1,34 @@
+name: "action-release-changelog"
+description: "Create a release based on the most recent changelog entry"
+inputs:
+  github_token:
+    description: "GitHub token with permissions to create a release (content: write)"
+    required: true
+  changelog_file:
+    description: "Filepath of the changelog file"
+    default: "./CHANGELOG.md"
+  draft:
+    description: "Create a draft release"
+    default: "true"
+  write_to_summary:
+    description: "Write to the workflow summary"
+    default: "true"
+  dry_run:
+    description: "Dry run the action"
+    default: "false"
+outputs:
+  version_short:
+    description: "Short version of the release"
+  version_long:
+    description: "Long version of the release"
+  release_link:
+    description: "Link to the created release"
+runs:
+  using: "docker"
+  image: "docker://outoforbitdev/action-release-changelog:build--1656e31"
+  args:
+    - ${{ inputs.github_token }}
+    - ${{ inputs.changelog_file }}
+    - ${{ inputs.draft }}
+    - ${{ inputs.write_to_summary }}
+    - ${{ inputs.dry_run }}
