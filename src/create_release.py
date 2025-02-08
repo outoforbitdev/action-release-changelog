@@ -11,6 +11,7 @@ def release_version(
         should_write_to_summary: str, 
         dry_run: str, 
         repo_name: str):
+    write_to_output_variable("dry-run", dry_run)
     client = get_github_client(github_token)
     try:
         first_version = find_first_changelog_version(changelog_file)
