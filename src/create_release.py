@@ -38,12 +38,12 @@ def write_release_to_output(release_version, release_link):
 def release_version(github_token, changelog_file, draft, should_write_to_summary, dry_run, repo_name):
     first_version = find_first_changelog_version(changelog_file)
     if first_version[0] != "v":
-        write_to_output_variable("NEXT_VERSION_SHORT", first_version)
+        write_to_output_variable("version_short", first_version)
         first_version = f"v{first_version}"
-        write_to_output_variable("NEXT_VERSION_LONG", first_version)
+        write_to_output_variable("version_long", first_version)
     else:
-        write_to_output_variable("NEXT_VERSION_SHORT", first_version[1:])
-        write_to_output_variable("NEXT_VERSION_LONG", first_version)
+        write_to_output_variable("version_short", first_version[1:])
+        write_to_output_variable("version_long", first_version)
     print(f"First version found: {first_version}")
     
     if first_version:
@@ -73,7 +73,7 @@ def find_first_changelog_version(changelog_path="CHANGELOG.md"):
     return None  # Return None if no version is found
 
 def write_to_output_variable(variable_name: str, value: str):
-    os.environ["GITHUB_ENV"] = os.environ["GITHUB_ENV"] + f"{variable_name}={value}\n"
+    os.environ["GITHUB_OUTPUT"] = os.environ["GITHUB_OUTPUT"] + f"{variable_name}={value}\n"
 
 if __name__ == "__main__":
     github_token = sys.argv[1]
