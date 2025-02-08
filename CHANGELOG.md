@@ -1,3 +1,3 @@
-## 0.0.7 (2025-02-07)
+## 0.0.8 (2025-02-08)
 ### Features
 - Initial prototype release
