@@ -28,6 +28,18 @@ jobs:
         run: python src/create_release.py ${{ secrets.GITHUB_TOKEN }} src/test/CHANGELOG.md true true true outoforbitdev/action-release-changelog
       - name: Check outputs
         run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version-short }} ${{ steps.run-script.outputs.version-long }}
+  test-docker-image:
+    runs-on: ubuntu-latest
+    name: Test Image
+    needs: test-python-script
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test Docker Image
+        uses: outoforbitdev/action-docker-test@v1.0.0-staging.1
+        id: docker-test
+        with:
+          test-command: "sh ./test.sh"
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
