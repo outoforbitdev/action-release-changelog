@@ -14,6 +14,9 @@ jobs:
   test-python-script:
     runs-on: ubuntu-latest
     name: Test Python Script
+    outputs:
+      last-version: ${{ steps.run-script.outputs.last-version }}
+      version-long: ${{ steps.run-script.outputs.version-long}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,9 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Image
     needs: test-python-script
-    outputs:
-      last-version: ${{ steps.test-image.outputs.last-version }}
-      version-long: ${{ steps.test-image.outputs.version-long}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,10 +49,12 @@ jobs:
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
-    needs: test-docker-image
+    needs: 
+      - test-python-script
+      - test-docker-image
     env:
       NOT_CHORE: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
-      NEW_VERSION: ${{ needs.test-docker-image.outputs.last-version != needs.test-docker-image.outputs.version-long}}
+      NEW_VERSION: ${{ needs.test-python-script.outputs.last-version != needs.test-python-script.outputs.version-long}}
     if: ${{ github.env.NOT_CHORE && github.env.NEW_VERSION }}
     steps:
       - name: Checkout
