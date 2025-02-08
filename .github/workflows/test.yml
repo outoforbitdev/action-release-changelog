@@ -6,6 +6,8 @@ on:
       - opened
       - reopened
       - synchronize
+    paths:
+      - src/*
 jobs:
   test-python-script:
     runs-on: ubuntu-latest
@@ -27,22 +29,21 @@ jobs:
       - name: Check outputs
         run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version_short }} ${{ steps.run-script.outputs.version_long }}
 
-  # publish-docker-image:
-  #   runs-on: ubuntu-latest
-  #   name: Publish Image
-  #   needs: test-python-script
-  #   if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #     - name: Publish Image
-  #       uses: outoforbitdev/action-docker-publish@v3.0.0
-  #       id: docker-publish
-  #       if: github.base_ref == 'staging' || github.base_ref == 'main'
-  #       with:
-  #         docker-username: ${{ secrets.DOCKER_USERNAME }}
-  #         docker-token: ${{ secrets.DOCKER_TOKEN }}
-  #         image-name: ${{ vars.IMAGE_NAME }}
-  #         image-tag: "build"
-  #     - name: Output Tags
-  #       run: echo "Tag is ${{steps.docker-publish.output.sha-tag}}"
+  publish-docker-image:
+    runs-on: ubuntu-latest
+    name: Publish Image
+    needs: test-python-script
+    if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Publish Image
+        uses: outoforbitdev/action-docker-publish@v3.0.0
+        id: docker-publish
+        if: github.base_ref == 'staging' || github.base_ref == 'main'
+        with:
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-token: ${{ secrets.DOCKER_TOKEN }}
+          image-name: ${{ vars.IMAGE_NAME }}
+          image-tag: "build"
+          dockerfile-path: "./src"
