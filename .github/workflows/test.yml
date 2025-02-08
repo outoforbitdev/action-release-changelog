@@ -57,6 +57,7 @@ jobs:
           docker-token: ${{ secrets.DOCKER_TOKEN }}
           image-name: ${{ vars.IMAGE_NAME }}
           image-tag: "build"
+          platforms: "linux/amd64,linux/arm64"
   test-action:
     runs-on: ubuntu-latest
     name: Test Action

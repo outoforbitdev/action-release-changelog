@@ -23,10 +23,12 @@ def release_version(
         last_version = get_last_version(repo)
         write_to_output_variable("last-version", last_version)
         
-        if not dry_run:
-                release = create_github_release(repo, long_version, github_token, f"Release {first_version}", draft)
-                if should_write_to_summary:
-                    write_release_to_summary(first_version, release.html_url)
+        if dry_run:
+            write_dry_run_to_summary(long_version)
+        else:
+            release = create_github_release(repo, long_version, github_token, f"Release {first_version}", draft)
+            if should_write_to_summary:
+                write_release_to_summary(long_version, release.html_url)
     except Exception as e:
         client.close()
         raise e
@@ -69,6 +71,9 @@ def release_exists(repo, tag_name):
     
 def write_release_to_summary(release_version, release_link):
     write_to_summary(f"## Release Created\n\n- [{release_version}]({release_link})\n\n")
+
+def write_dry_run_to_summary(release_version: str):
+    write_to_summary(f"## Dry Run\n\n Release {release_version} would have been created\n\n")
 
 def write_to_summary(content):
     step_summary_path = os.getenv("GITHUB_STEP_SUMMARY")
