@@ -16,12 +16,12 @@ def release_version(
         first_version = find_first_changelog_version(changelog_file)
         short_version = first_version
         long_version = f"v{short_version}"
-        write_to_output_variable("version_short", short_version)
-        write_to_output_variable("version_long", long_version)
+        write_to_output_variable("version-short", short_version)
+        write_to_output_variable("version-long", long_version)
 
         repo = client.get_repo(repo_name)
         last_version = get_last_version(repo)
-        write_to_output_variable("last_version", last_version)
+        write_to_output_variable("last-version", last_version)
         
         if not dry_run:
                 release = create_github_release(repo, long_version, github_token, f"Release {first_version}", draft)

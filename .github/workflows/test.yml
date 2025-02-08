@@ -27,8 +27,7 @@ jobs:
         id: run-script
         run: python src/create_release.py ${{ secrets.GITHUB_TOKEN }} src/test/CHANGELOG.md true true true outoforbitdev/action-release-changelog
       - name: Check outputs
-        run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version_short }} ${{ steps.run-script.outputs.version_long }}
-
+        run: python src/test/check_outputs.py ${{ steps.run-script.outputs.version-short }} ${{ steps.run-script.outputs.version-long }}
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
@@ -47,3 +46,19 @@ jobs:
           image-name: ${{ vars.IMAGE_NAME }}
           image-tag: "build"
           dockerfile-path: "./src"
+  test-action:
+    runs-on: ubuntu-latest
+    name: Test Action
+    needs: test-python-script
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Create Release
+        uses: ./
+        id: create-release
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          dry-run: true
