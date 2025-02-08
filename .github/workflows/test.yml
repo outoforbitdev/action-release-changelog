@@ -35,10 +35,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build image
-        run: docker build -t image .
       - name: Test image
-        run: docker run "ls" image /src/tests.sh
+        run: |
+          docker build -t image .
+          docker run "ls" image /src/tests.sh
       
   publish-docker-image:
     runs-on: ubuntu-latest
