@@ -32,3 +32,4 @@ runs:
     - ${{ inputs.draft }}
     - ${{ inputs.write_to_summary }}
     - ${{ inputs.dry_run }}
+    - ${{ github.repository }}
