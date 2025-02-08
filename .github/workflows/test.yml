@@ -8,6 +8,8 @@ on:
       - synchronize
     paths:
       - src/*
+      - Dockerfile
+      - action.yml
 jobs:
   test-python-script:
     runs-on: ubuntu-latest
