@@ -1,76 +1,74 @@
 import os
 import re
 import sys
-import requests
+from github import Github, Auth, Repository
 import subprocess
 
-def release_exists(repo, tag_name, token):
-    url = f"https://api.github.com/repos/{repo}/releases/tags/{tag_name}"
-    headers = {
-        "Authorization": f"token {token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    response = requests.get(url, headers=headers)
-    return response.status_code == 200
+def release_version(
+        github_token: str, 
+        changelog_file: str, 
+        draft: str, 
+        should_write_to_summary: str, 
+        dry_run: str, 
+        repo_name: str):
+    client = get_github_client(github_token)
+    try:
+        first_version = find_first_changelog_version(changelog_file)
+        short_version = first_version
+        long_version = f"v{short_version}"
+        write_to_output_variable("short_version", short_version)
+        write_to_output_variable("long_version", long_version)
 
-def create_github_release(repo, tag_name, token, body=None, draft=True, prerelease=False,):
-    if release_exists(repo, tag_name, token):
-        print(f"Release with tag {tag_name} already exists.")
-        return None
-    url = f"https://api.github.com/repos/{repo}/releases"
-    headers = {
-        "Authorization": f"token {token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    data = {
-        "tag_name": tag_name,
-        "name": tag_name,
-        "body": body or "",
-        "draft": draft,
-        "prerelease": prerelease
-    }
-    response = requests.post(url, json=data, headers=headers)
-    return response.json()
+        repo = client.get_repo(repo_name)
+        last_version = repo.get_latest_release().tag_name
+        write_to_output_variable("last_version", last_version)
+        
+        if not dry_run:
+                release = create_github_release(repo, long_version, github_token, f"Release {first_version}", draft)
+                if should_write_to_summary:
+                    write_release_to_summary(first_version, release.html_url)
+    except Exception as e:
+        client.close()
+        raise e
+    client.close()
+
+def get_github_client(github_token: str):
+    auth = Auth.Token("access_token")
+    client = Github(auth=auth)
+    return client
+
+def find_first_changelog_version(changelog_path="CHANGELOG.md"):
+    version_pattern = re.compile(r'^#{1,2} (v*)(\d+\.\d+\.\d+)')
     
-def write_release_to_output(release_version, release_link):
+    with open(changelog_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            match = version_pattern.match(line.strip())
+            if match:
+                return match.group(2)
+    
+    error("No version found in changelog")
+
+def error(message):
+    raise Exception(message)
+
+def create_github_release(repo: Repository, tag_name: str, body: str=None, draft: bool=True, prerelease: bool=False,):
+    if release_exists(repo, tag_name):
+        error(f"Release {tag_name} already exists")
+    release = repo.create_git_tag_and_release(tag=tag_name, tag_message=body, draft=draft, prerelease=prerelease)
+    return release
+
+def release_exists(repo, tag_name):
+    release = repo.get_release(tag_name)
+    return release is not None
+    
+def write_release_to_summary(release_version, release_link):
     write_to_summary(f"## Release Created\n\n- [{release_version}]({release_link})\n\n")
-
-def release_version(github_token, changelog_file, draft, should_write_to_summary, dry_run, repo_name):
-    first_version = find_first_changelog_version(changelog_file)
-    if first_version[0] != "v":
-        write_to_output_variable("version_short", first_version)
-        first_version = f"v{first_version}"
-        write_to_output_variable("version_long", first_version)
-    else:
-        write_to_output_variable("version_short", first_version[1:])
-        write_to_output_variable("version_long", first_version)
-    print(f"First version found: {first_version}")
-    
-    if first_version:
-        if repo_name and not dry_run:
-            release_response = create_github_release(repo_name, first_version, github_token, f"Release {first_version}", draft)
-            print(release_response)
-            if should_write_to_summary:
-                write_release_to_output(first_version, release_response["html_url"])
-        else:
-            print("Could not determine repository name.")
 
 def write_to_summary(content):
     step_summary_path = os.getenv("GITHUB_STEP_SUMMARY")
     if step_summary_path:
         with open(step_summary_path, "a") as summary_file:
             summary_file.write(content)
-
-def find_first_changelog_version(changelog_path="CHANGELOG.md"):
-    version_pattern = re.compile(r'^#{1,2} (\d+\.\d+\.\d+)')
-    
-    with open(changelog_path, 'r', encoding='utf-8') as file:
-        for line in file:
-            match = version_pattern.match(line.strip())
-            if match:
-                return match.group(1)
-    
-    return None  # Return None if no version is found
 
 def write_to_output_variable(variable_name: str, value: str):
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
