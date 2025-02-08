@@ -5,4 +5,4 @@ COPY src /src
 RUN chmod -R +x /src
 RUN sh /src/tests.sh
 
-ENTRYPOINT ["src/entrypoint.sh"]
+ENTRYPOINT ["/src/entrypoint.sh"]
