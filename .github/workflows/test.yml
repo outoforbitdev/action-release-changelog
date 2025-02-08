@@ -39,6 +39,7 @@ jobs:
         uses: outoforbitdev/action-docker-test@v1.0.0-staging.1
         id: docker-test
         with:
+          dockerfile-path: "/.src"
           test-command: "sh ./test.sh"
   publish-docker-image:
     runs-on: ubuntu-latest
