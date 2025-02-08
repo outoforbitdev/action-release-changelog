@@ -24,6 +24,8 @@ outputs:
     description: "Short version of the release"
   version-long:
     description: "Long version of the release"
+  last-version:
+    description: "Last released version"
   release-link:
     description: "Link to the created release"
 runs:
