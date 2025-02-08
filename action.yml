@@ -30,7 +30,7 @@ outputs:
     description: "Link to the created release"
 runs:
   using: "docker"
-  image: "docker://outoforbitdev/action-release-changelog:build--8ca129a"
+  image: "docker://outoforbitdev/action-release-changelog:build--1cddfcc"
   args:
     - ${{ inputs.github-token }}
     - ${{ inputs.changelog-file }}
