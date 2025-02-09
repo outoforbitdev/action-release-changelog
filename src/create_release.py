@@ -63,7 +63,7 @@ def get_last_version(repo: Repository):
 def create_github_release(repo: Repository, tag_name: str, body: str=None, draft: bool=True, prerelease: bool=False,):
     if release_exists(repo, tag_name):
         error(f"Release {tag_name} already exists")
-    release = repo.create_git_tag_and_release(tag=tag_name, tag_message=body, draft=draft, prerelease=prerelease, release_name=tag_name, release_message="", object="object", type="type")
+    release = repo.create_git_release(tag=tag_name, name=tag_name, message=body, draft=draft, prerelease=prerelease, generate_release_notes=False)
     return release
 
 def release_exists(repo, tag_name):
