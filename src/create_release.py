@@ -11,6 +11,7 @@ def release_version(
         should_write_to_summary: str, 
         dry_run: str, 
         repo_name: str):
+    write_to_output_variable("dry-run", dry_run)
     client = get_github_client(github_token)
     try:
         first_version = find_first_changelog_version(changelog_file)
@@ -26,7 +27,7 @@ def release_version(
         if dry_run:
             write_dry_run_to_summary(long_version)
         else:
-            release = create_github_release(repo, long_version, github_token, f"Release {first_version}", draft)
+            release = create_github_release(repo, long_version, draft=draft)
             if should_write_to_summary:
                 write_release_to_summary(long_version, release.html_url)
     except Exception as e:
@@ -59,13 +60,15 @@ def get_last_version(repo: Repository):
         return None
     return repo.get_latest_release().tag_name
 
-def create_github_release(repo: Repository, tag_name: str, body: str=None, draft: bool=True, prerelease: bool=False,):
+def create_github_release(repo: Repository, tag_name: str, body: str="", draft: bool=True, prerelease: bool=False,):
     if release_exists(repo, tag_name):
         error(f"Release {tag_name} already exists")
-    release = repo.create_git_tag_and_release(tag=tag_name, tag_message=body, draft=draft, prerelease=prerelease)
+    release = repo.create_git_release(tag=tag_name, name=tag_name, message=body, draft=draft, prerelease=prerelease, generate_release_notes=False)
     return release
 
 def release_exists(repo, tag_name):
+    if repo.get_releases().totalCount == 0:
+        return False
     release = repo.get_release(tag_name)
     return release is not None
     
@@ -85,11 +88,14 @@ def write_to_output_variable(variable_name: str, value: str):
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.write(f"{variable_name}=\"{value}\"\n")
 
+def parse_commandline_boolean(value: str):
+    return value.lower() == "true"
+
 if __name__ == "__main__":
     github_token = sys.argv[1]
     changelog_file = sys.argv[2]
-    draft = sys.argv[3]
-    should_write_to_summary = sys.argv[4]
-    dry_run = sys.argv[5]
+    draft = parse_commandline_boolean(sys.argv[3])
+    should_write_to_summary = parse_commandline_boolean(sys.argv[4])
+    dry_run = parse_commandline_boolean(sys.argv[5])
     repo_name = sys.argv[6]
     release_version(github_token, changelog_file, draft, should_write_to_summary, dry_run, repo_name)
