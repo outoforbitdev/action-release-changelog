@@ -10,6 +10,8 @@ jobs:
   test-python-script:
     runs-on: ubuntu-latest
     name: Test Python Script
+    permissions:
+      contents: write
     outputs:
       last-version: ${{ steps.run-script.outputs.last-version }}
       version-long: ${{ steps.run-script.outputs.version-long}}
