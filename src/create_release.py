@@ -27,7 +27,7 @@ def release_version(
         if dry_run:
             write_dry_run_to_summary(long_version)
         else:
-            release = create_github_release(repo, long_version, github_token, f"Release {first_version}", draft)
+            release = create_github_release(repo, long_version, None, draft)
             if should_write_to_summary:
                 write_release_to_summary(long_version, release.html_url)
     except Exception as e:
