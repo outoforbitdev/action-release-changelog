@@ -27,7 +27,7 @@ def release_version(
         if dry_run:
             write_dry_run_to_summary(long_version)
         else:
-            release = create_github_release(repo, long_version, None, draft)
+            release = create_github_release(repo, long_version, draft=draft)
             if should_write_to_summary:
                 write_release_to_summary(long_version, release.html_url)
     except Exception as e:
@@ -60,7 +60,7 @@ def get_last_version(repo: Repository):
         return None
     return repo.get_latest_release().tag_name
 
-def create_github_release(repo: Repository, tag_name: str, body: str=None, draft: bool=True, prerelease: bool=False,):
+def create_github_release(repo: Repository, tag_name: str, body: str="", draft: bool=True, prerelease: bool=False,):
     if release_exists(repo, tag_name):
         error(f"Release {tag_name} already exists")
     release = repo.create_git_release(tag=tag_name, name=tag_name, message=body, draft=draft, prerelease=prerelease, generate_release_notes=False)
