@@ -16,6 +16,10 @@ class MockRelease:
     def created_at(self):
         return 1
 
+    @property
+    def html_url(self):
+        return "https://github.com"
+
 class MockPaginatedList:
     __total_count = 1
 
@@ -31,21 +35,16 @@ class MockPaginatedList:
     def __iter__(self):
         yield from self.__elements
 
-def get_mock_release():
-    mock_release = MagicMock()
-    mock_release.html_url = "https://github.com"
-    return mock_release
-
 def is_version_one_two_three(version):
     if version == "v1.2.3":
-        return get_mock_release()
+        return MockRelease()
     return None
 
 def get_mock_repo():
     mock_repo = MagicMock()
     mock_repo.get_releases.return_value = MockPaginatedList()
     mock_repo.get_latest_release.return_value.tag_name = "v1.2.3"
-    mock_repo.create_git_release.return_value = get_mock_release()
+    mock_repo.create_git_release.return_value = MockRelease()
     mock_repo.get_release = is_version_one_two_three
     return mock_repo
 
@@ -157,8 +156,8 @@ class TestReleaseVersion(unittest.TestCase):
         mock_output.assert_any_call("version-long", "v1.2.3")
         mock_output.assert_any_call("last-version", "v1.2.2")
         mock_write_summary.assert_not_called()
-        mock_create_release.assert_called_once()
-        mock_write_release_summary.assert_called_once()
+        mock_create_release.assert_called_with(mock_repo, "v1.2.3", "", draft=True)
+        mock_write_release_summary.assert_called_with("v1.2.3", mock_create_release.return_value.html_url)
         mock_write_dry_run_summary.assert_not_called()
     
     @patch("create_release.get_github_client")
@@ -186,7 +185,7 @@ class TestReleaseVersion(unittest.TestCase):
         release_version("token", "CHANGELOG.md", draft=True, should_write_to_summary=True, dry_run=False, repo_name="test_repo")
 
         mock_output.assert_any_call("last-version", "v1.2.3")
-        mock_write_summary.assert_any_call("## No Changes\n\nVersion in changelog ({last_version}) already exists as a release\n\n")
+        mock_write_summary.assert_called_with("## No Changes\n\nVersion in changelog (v1.2.3) already exists as a release\n\n")
         mock_create_release.assert_not_called()
         mock_write_release_summary.assert_not_called()
         mock_write_dry_run_summary.assert_not_called()
