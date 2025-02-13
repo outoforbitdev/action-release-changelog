@@ -36,14 +36,29 @@ jobs:
         run: |
           docker build -t image .
           docker run --entrypoint "sh" image /src/tests.sh
-      
+  test-action:
+    runs-on: ubuntu-latest
+    name: Test Action
+    needs: test-docker-image
+    outputs:
+      new-release: ${{ steps.create-release.outputs.version-long != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Create Release
+        uses: ./
+        id: create-release
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          dry-run: true
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
-    needs: 
-      - test-python-script
-      - test-docker-image
-    if: ${{ needs.test-python-script.outputs.new-release }}
+    needs: test-action
+    if: ${{ needs.test-action.outputs.new-release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,19 +72,3 @@ jobs:
           image-name: ${{ vars.IMAGE_NAME }}
           image-tag: "build"
           platforms: "linux/amd64,linux/arm64"
-  test-action:
-    runs-on: ubuntu-latest
-    name: Test Action
-    needs: test-docker-image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Create Release
-        uses: ./
-        id: create-release
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          dry-run: true
