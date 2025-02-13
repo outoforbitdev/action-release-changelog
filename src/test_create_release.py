@@ -157,8 +157,6 @@ class TestReleaseVersion(unittest.TestCase):
         
         release_version("token", "CHANGELOG.md", draft=True, should_write_to_summary=True, dry_run=False, repo_name="test_repo")
         
-        mock_output.assert_any_call("version-short", "1.2.3")
-        mock_output.assert_any_call("version-long", "v1.2.3")
         mock_output.assert_any_call("last-version", "v1.2.3")
         mock_write_summary.assert_any_call("## No Changes\n\nVersion in changelog ({last_version}) already exists as a release\n\n")
         mock_create_release.assert_not_called()

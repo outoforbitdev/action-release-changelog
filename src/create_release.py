@@ -17,9 +17,6 @@ def release_version(
         first_version = find_first_changelog_version(changelog_file)
         short_version = first_version
         long_version = f"v{short_version}"
-        write_to_output_variable("version-short", short_version)
-        write_to_output_variable("version-long", long_version)
-
         repo = client.get_repo(repo_name)
         last_version = get_last_version(repo)
         write_to_output_variable("last-version", last_version)
@@ -27,6 +24,9 @@ def release_version(
         if release_exists(repo, long_version):
             write_to_summary("## No Changes\n\nVersion in changelog ({last_version}) already exists as a release\n\n")
         else:
+            write_to_output_variable("version-short", short_version)
+            write_to_output_variable("version-long", long_version)
+
             if dry_run:
                 write_dry_run_to_summary(long_version)
             else:
