@@ -23,13 +23,16 @@ def release_version(
         repo = client.get_repo(repo_name)
         last_version = get_last_version(repo)
         write_to_output_variable("last-version", last_version)
-        
-        if dry_run:
-            write_dry_run_to_summary(long_version)
+
+        if release_exists(repo, long_version):
+            write_to_summary("## No Changes\n\nVersion in changelog ({last_version}) already exists as a release\n\n")
         else:
-            release = create_github_release(repo, long_version, draft=draft)
-            if should_write_to_summary:
-                write_release_to_summary(long_version, release.html_url)
+            if dry_run:
+                write_dry_run_to_summary(long_version)
+            else:
+                release = create_github_release(repo, long_version, draft=draft)
+                if should_write_to_summary:
+                    write_release_to_summary(long_version, release.html_url)
     except Exception as e:
         client.close()
         raise e
@@ -55,7 +58,6 @@ def error(message):
     raise Exception(message)
 
 def get_last_version(repo: Repository):
-    print(repo.get_releases())
     if repo.get_releases().totalCount == 0:
         return None
     return repo.get_latest_release().tag_name
