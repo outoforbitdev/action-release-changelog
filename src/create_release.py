@@ -58,9 +58,20 @@ def error(message):
     raise Exception(message)
 
 def get_last_version(repo: Repository):
-    if repo.get_releases().totalCount == 0:
+    releases = repo.get_releases()
+    if releases.totalCount == 0:
         return None
-    return repo.get_latest_release().tag_name
+    last_date = None
+    last_tag = None
+    for release in releases:
+        print(release)
+        if release.draft:
+            continue
+        if last_date is None or release.created_at > last_date:
+            last_date = release.created_at
+            last_tag = release.tag_name
+    return last_tag
+
 
 def create_github_release(repo: Repository, tag_name: str, body: str="", draft: bool=True, prerelease: bool=False,):
     if release_exists(repo, tag_name):

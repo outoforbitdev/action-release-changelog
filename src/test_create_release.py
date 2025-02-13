@@ -3,6 +3,34 @@ import unittest
 from unittest.mock import MagicMock, mock_open, patch
 from create_release import create_github_release, find_first_changelog_version, get_last_version, release_exists, release_version, write_dry_run_to_summary, write_release_to_summary, write_to_output_variable, write_to_summary
 
+class MockRelease:
+    @property
+    def draft(self):
+        return False
+    
+    @property
+    def tag_name(self):
+        return "v1.2.3"
+    
+    @property
+    def created_at(self):
+        return 1
+
+class MockPaginatedList:
+    __total_count = 1
+
+    @property
+    def totalCount(self):
+        return self.__total_count
+    @totalCount.setter
+    def totalCount(self, value):
+        self.__total_count = value
+    
+    __elements = [ MockRelease() ]
+
+    def __iter__(self):
+        yield from self.__elements
+
 def get_mock_release():
     mock_release = MagicMock()
     mock_release.html_url = "https://github.com"
@@ -15,7 +43,7 @@ def is_version_one_two_three(version):
 
 def get_mock_repo():
     mock_repo = MagicMock()
-    mock_repo.get_releases.return_value.totalCount = 1
+    mock_repo.get_releases.return_value = MockPaginatedList()
     mock_repo.get_latest_release.return_value.tag_name = "v1.2.3"
     mock_repo.create_git_release.return_value = get_mock_release()
     mock_repo.get_release = is_version_one_two_three
@@ -156,7 +184,7 @@ class TestReleaseVersion(unittest.TestCase):
         mock_get_client.return_value.get_repo.return_value = mock_repo
         
         release_version("token", "CHANGELOG.md", draft=True, should_write_to_summary=True, dry_run=False, repo_name="test_repo")
-        
+
         mock_output.assert_any_call("last-version", "v1.2.3")
         mock_write_summary.assert_any_call("## No Changes\n\nVersion in changelog ({last_version}) already exists as a release\n\n")
         mock_create_release.assert_not_called()
