@@ -22,7 +22,7 @@ def release_version(
         write_to_output_variable("last-version", last_version)
 
         if release_exists(repo, long_version):
-            write_to_summary("## No Changes\n\nVersion in changelog ({last_version}) already exists as a release\n\n")
+            write_to_summary("## No Changes\n\nVersion in changelog ({last-version}) already exists as a release\n\n")
         else:
             write_to_output_variable("version-short", short_version)
             write_to_output_variable("version-long", long_version)
