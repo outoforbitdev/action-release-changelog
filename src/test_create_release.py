@@ -156,7 +156,7 @@ class TestReleaseVersion(unittest.TestCase):
         mock_output.assert_any_call("version-long", "v1.2.3")
         mock_output.assert_any_call("last-version", "v1.2.2")
         mock_write_summary.assert_not_called()
-        mock_create_release.assert_called_with(mock_repo, "v1.2.3", "", draft=True)
+        mock_create_release.assert_called_with(mock_repo, "v1.2.3", draft=True)
         mock_write_release_summary.assert_called_with("v1.2.3", mock_create_release.return_value.html_url)
         mock_write_dry_run_summary.assert_not_called()
     
