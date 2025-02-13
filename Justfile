@@ -7,7 +7,7 @@ install:
     npx husky install
     npx husky init
     echo "npx commitlint --edit \$1 --config ./.linters/config/commitlint.config.js" > .husky/commit-msg
-    echo "just lint" > .husky/pre-commit
+    echo "just lint\njust test" > .husky/pre-commit
 
 build:
     npm run build
