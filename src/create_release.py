@@ -82,11 +82,9 @@ def create_github_release(repo: Repository, tag_name: str, body: str="", draft: 
 def release_exists(repo, tag_name):
     releases = repo.get_releases()
     for release in releases:
-        if release.tag_name == tag_name:
-            if release.draft:
-                return None
-            return release
-    return None
+        if release.tag_name == tag_name and not release.draft:
+            return True
+    return False
     
 def write_release_to_summary(release_version, release_link):
     write_to_summary(f"## Release Created\n\n- [{release_version}]({release_link})\n\n")

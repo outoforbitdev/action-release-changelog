@@ -4,9 +4,15 @@ from unittest.mock import MagicMock, mock_open, patch
 from create_release import create_github_release, find_first_changelog_version, get_last_version, release_exists, release_version, write_dry_run_to_summary, write_release_to_summary, write_to_output_variable, write_to_summary
 
 class MockRelease:
+    __draft = False
     @property
     def draft(self):
-        return False
+        return self.__draft
+    
+    @draft.setter
+    def draft(self, value):
+        self.__draft = value
+
     
     @property
     def tag_name(self):
@@ -84,6 +90,25 @@ class TestReleaseExists(unittest.TestCase):
     def test_release_exists_no_repos(self):
         mock_repo = get_empty_mock_repo()
         self.assertFalse(release_exists(mock_repo, "v1.2.4"))
+    
+    def test_release_exists_draft_and_exists(self):
+        mock_repo = get_mock_repo()
+        one_two_three_release = MockRelease()
+        one_two_three_release_draft = MockRelease()
+        one_two_three_release_draft.draft = True
+        mock_paginated_list = MockPaginatedList()
+        mock_paginated_list.set_elements([one_two_three_release_draft, one_two_three_release])
+        mock_repo.get_releases.return_value = mock_paginated_list
+        self.assertTrue(release_exists(mock_repo, "v1.2.3"))
+
+    def test_release_exists_draft(self):
+        mock_repo = get_mock_repo()
+        release = MockRelease()
+        release.draft = True
+        mock_paginated_list = MockPaginatedList()
+        mock_paginated_list.set_elements([release])
+        mock_repo.get_releases.return_value = mock_paginated_list
+        self.assertFalse(release_exists(mock_repo, "v1.2.3"))
 
 class TestCreateGithubRelease(unittest.TestCase):
     def test_create_github_release_exists(self):
