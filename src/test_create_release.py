@@ -25,12 +25,12 @@ class MockPaginatedList:
 
     @property
     def totalCount(self):
-        return self.__total_count
-    @totalCount.setter
-    def totalCount(self, value):
-        self.__total_count = value
+        return len(self.__elements)
     
     __elements = [ MockRelease() ]
+
+    def set_elements(self, elements):
+        self.__elements = elements
 
     def __iter__(self):
         yield from self.__elements
@@ -43,10 +43,17 @@ def is_version_one_two_three(version):
 def get_mock_repo():
     mock_repo = MagicMock()
     mock_repo.get_releases.return_value = MockPaginatedList()
-    mock_repo.get_latest_release.return_value.tag_name = "v1.2.3"
     mock_repo.create_git_release.return_value = MockRelease()
-    mock_repo.get_release = is_version_one_two_three
     return mock_repo
+
+def get_empty_mock_repo():
+    mock_repo = MagicMock()
+    mock_paginated_list = MockPaginatedList()
+    mock_paginated_list.set_elements([])
+    mock_repo.get_releases.return_value = mock_paginated_list
+    mock_repo.create_git_release.return_value = MockRelease()
+    return mock_repo
+
 
 class TestFindFirstChangelogVersion(unittest.TestCase):
     @patch("builtins.open", new_callable=mock_open, read_data="# v1.2.3")
@@ -75,8 +82,7 @@ class TestReleaseExists(unittest.TestCase):
         self
 
     def test_release_exists_no_repos(self):
-        mock_repo = get_mock_repo()
-        mock_repo.get_releases.return_value.totalCount = 0
+        mock_repo = get_empty_mock_repo()
         self.assertFalse(release_exists(mock_repo, "v1.2.4"))
 
 class TestCreateGithubRelease(unittest.TestCase):
@@ -96,8 +102,7 @@ class TestGetLastVersion(unittest.TestCase):
         self.assertEqual(version, "v1.2.3")
 
     def test_get_last_version_none_exist(self):
-        mock_repo = get_mock_repo()
-        mock_repo.get_releases.return_value.totalCount = 0
+        mock_repo = get_empty_mock_repo()
         version = get_last_version(mock_repo)
         self.assertIsNone(version)
 
