@@ -7,8 +7,6 @@ on:
       - beta
       - dev
       - staging
-    paths:
-      - CHANGELOG.md
 jobs:
   release:
     permissions: 
