@@ -38,8 +38,6 @@ jobs:
   test-action:
     runs-on: ubuntu-latest
     name: Test Action
-    outputs:
-      new-release: ${{ steps.create-release.outputs.version-long != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,7 +57,6 @@ jobs:
       - test-python-script
       - test-docker-image
       - test-action
-    if: ${{ needs.test-action.outputs.new-release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
