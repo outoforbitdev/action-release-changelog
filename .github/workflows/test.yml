@@ -27,7 +27,6 @@ jobs:
   test-docker-image:
     runs-on: ubuntu-latest
     name: Test Image
-    needs: test-python-script
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,9 +38,6 @@ jobs:
   test-action:
     runs-on: ubuntu-latest
     name: Test Action
-    needs: test-docker-image
-    outputs:
-      new-release: ${{ steps.create-release.outputs.version-long != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,8 +53,10 @@ jobs:
   publish-docker-image:
     runs-on: ubuntu-latest
     name: Publish Image
-    needs: test-action
-    if: ${{ needs.test-action.outputs.new-release }}
+    needs: 
+      - test-python-script
+      - test-docker-image
+      - test-action
     steps:
       - name: Checkout
         uses: actions/checkout@v4
