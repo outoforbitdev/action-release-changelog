@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create Release
-        uses: ./
+        uses: outoforbitdev/action-release-changelog@v0.0.11
         id: create-release
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
