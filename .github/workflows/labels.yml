@@ -1,6 +1,6 @@
 name: Sync Labels
 on:
-  issues: 
+  issues:
     types:
       - opened
       - labeled

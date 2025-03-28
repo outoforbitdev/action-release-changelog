@@ -9,7 +9,7 @@ on:
       - staging
 jobs:
   release:
-    permissions: 
+    permissions:
       contents: write
     runs-on: ubuntu-latest
     name: Create Github Release
