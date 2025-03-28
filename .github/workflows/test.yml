@@ -57,6 +57,7 @@ jobs:
       - test-python-script
       - test-docker-image
       - test-action
+    if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
