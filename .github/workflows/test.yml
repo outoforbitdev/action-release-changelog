@@ -12,7 +12,7 @@ jobs:
     name: Test Python Script
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: Set up Python
@@ -29,7 +29,7 @@ jobs:
     name: Test Image
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Test image
         id: test-image
         run: |
@@ -40,7 +40,7 @@ jobs:
     name: Test Action
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: Create Release
@@ -60,7 +60,7 @@ jobs:
     if: ${{ !contains(github.event.pull_request.labels.*.name, format('type{0} chore', ':')) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Publish Image
         uses: outoforbitdev/action-docker-publish@v3.0.0
         id: docker-publish
