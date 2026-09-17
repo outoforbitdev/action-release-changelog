@@ -1,4 +1,11 @@
 # action-release-changelog
+
+> **Retired.** This action has been superseded by
+> [`reusable-workflows-library`](https://github.com/outoforbitdev/reusable-workflows-library)'s
+> `detect-new-changelog-version.yml` and `publish-release.yml` reusable
+> workflows. This repository is archived and kept for historical reference
+> only.
+
 A GitHub Action designed to create a release based on the most recent changelog entry. 
 
 <p>
